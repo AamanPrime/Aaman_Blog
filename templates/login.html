@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block head %}
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('https://i.redd.it/hbubgh5bh3071.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>Login</h1>
+            <span class="subheading">Login to Talk</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+
+            {% for message in messages %}
+                <p style="color: red">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+          <!-- This is where the form will go -->
+          {{ wtf.quick_form(form, button_map={"submit":"primary"}) }}
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

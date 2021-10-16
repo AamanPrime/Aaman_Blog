@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('http://cdn30.us1.fansshare.com/image/tekken3/xiaoyu-413671502.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>Xiaoyu's Talk</h1>
+            <span class="subheading">A collection of Xiaoyu's random musings.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block body %}
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        {% for post in all_posts %}
+        <div class="post-preview">
+          <a href="{{ url_for('show_post', index=post.id) }}">
+            <h2 class="post-title">
+              {{post.title}}
+            </h2>
+            <h3 class="post-subtitle">
+              {{post.subtitle}}
+            </h3>
+          </a>
+          <p class="post-meta">Posted by
+            <a href="#">{{post.author.name}}</a>
+            on {{post.date}}{% if current_user.id == 1 %}<a href="{{url_for('delete', index=post.id)}}">✘</a>{% endif %}</p>
+        </div>
+        <hr>
+        {% endfor %}
+
+
+        <!-- New Post -->
+        <div class="clearfix">
+          <a class="btn btn-primary float-right" href="{{url_for('new_post')}}">Create New Post</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+
+{% endblock %}
