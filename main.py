@@ -217,14 +217,12 @@ def edit_post(post_id):
     edit = CreatePostForm(
         title=post.title,
         subtitle=post.subtitle,
-        author=post.author,
         img_url=post.img_url,
         body=post.body
     )
     if edit.validate_on_submit():
         post.title = edit.title.data
         post.subtitle = edit.subtitle.data
-        post.author = edit.author.data
         post.body = edit.body.data
         db.session.commit()
         return redirect(url_for('get_all_posts, logged_in=current_user.is_authenticated'))
