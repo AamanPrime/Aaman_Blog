@@ -227,7 +227,7 @@ def edit_post(post_id):
         post.author = edit.author.data
         post.body = edit.body.data
         db.session.commit()
-        return redirect(url_for('get_all_posts'))
+        return redirect(url_for('get_all_posts, logged_in=current_user.is_authenticated'))
 
     return render_template("make-post.html", form=edit, status="Edit Post", logged_in=current_user.is_authenticated)
 
