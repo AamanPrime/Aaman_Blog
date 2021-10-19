@@ -12,6 +12,8 @@ from flask_login import UserMixin, login_user, LoginManager, current_user, logou
 from sqlalchemy.orm import relationship
 import os
 import flask_gravatar
+import random
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
@@ -253,6 +255,30 @@ def register():
         return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
     return render_template('register.html', form=form, logged_in=current_user.is_authenticated)
 
-
+class GuessForm(FlaskForm):
+    guess = IntegerField("Guess Your Number")
+    submit = SubmitField('Try Your Luck')
+  
+rn_num = random.randint(1, 10)
+@app.route('/game', methods=['POST', 'GET'])
+def home():
+    
+    form = GuessForm()
+    if form.validate_on_submit():
+        guess = form.guess.data
+        if int(guess) == rn_num:
+            return render_template('index2.html', status='Congrulations, You Found It........',
+                                   img="https://media0.giphy.com/media/hVb4xkJTGrtyaEBi6L/giphy.gif?cid=790b7611807e66a71391a0580e02ebc94b4142607d40da81&rid=giphy.gif&ct=g",
+                                   form=form)
+        elif int(guess) > rn_num:
+            return render_template('index2.html', status='Please guess small number than this',
+                                   img='https://media3.giphy.com/media/NsBdv1HXGSgUJFLJPC/giphy.gif?cid=ecf05e47801n9tpmpzaspxdmxedar2oai5f8w3i6c2aep7s4&rid=giphy.gif&ct=g',
+                                   form=form)
+        elif int(guess) < rn_num:
+            return render_template('index2.html', status='Please guess large number than this',
+                                   img='https://media2.giphy.com/media/j5bsZqX1KTKngMyu90/giphy.gif?cid=ecf05e47iqxy0m7j3t9v9faws95u4n16tefm9cb9tr6w50s6&rid=giphy.gif&ct=g',
+                                   form=form)
+    return render_template('index2.html', form=form, img='https://i.giphy.com/media/UDU4oUJIHDJgQ/giphy.webp',
+                           status='To Play this game guess a number between 1 and 10')
 if __name__ == "__main__":
     app.run(debug=True)
