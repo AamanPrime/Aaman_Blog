@@ -262,7 +262,7 @@ class GuessForm(FlaskForm):
 rn_num = random.randint(1, 10)
 @app.route('/game', methods=['POST', 'GET'])
 def home():
-    
+    print(rn_num)
     form = GuessForm()
     if form.validate_on_submit():
         guess = form.guess.data
