@@ -259,9 +259,10 @@ class GuessForm(FlaskForm):
     guess = IntegerField("Guess Your Number")
     submit = SubmitField('Try Your Luck')
   
-rn_num = random.randint(1, 10)
+
 @app.route('/game', methods=['POST', 'GET'])
 def home():
+    rn_num = random.randint(1, 10)
     print(rn_num)
     form = GuessForm()
     if form.validate_on_submit():
