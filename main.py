@@ -128,6 +128,7 @@ db.create_all()
 @app.route('/')
 def get_all_posts():
     posts = db.session.query(BlogPost).all()
+    posts.reverse()
     return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated, current_user=current_user)
 
 
