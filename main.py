@@ -128,10 +128,6 @@ db.create_all()
 @app.route('/')
 def get_all_posts():
     posts = db.session.query(BlogPost).all()
-    ids = 0
-    for post in posts:
-      ids+=1
-      post.id = ids
     return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated, current_user=current_user)
 
 
