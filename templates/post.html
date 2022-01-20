@@ -45,12 +45,9 @@
       <div class="row">
 	 
         <div class="col-lg-8 col-md-10 mx-auto comment">
-		{{turn = 0 }}
+		<h1>Comments</h1>
                 {% for comment in post.comments %}
-		{{turn+=1}}
-		{% if turn==1%}
-			<h1>Users Comments</h1>
-		{% endif %}
+		
                     <ul class="commentList">
                     <li>
                         <div class="commenterImage">
