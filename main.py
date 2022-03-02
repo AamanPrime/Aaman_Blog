@@ -121,6 +121,11 @@ class Comment(db.Model):
     comment_author = relationship("User", back_populates="comments")
     text = db.Column(db.Text, nullable=False)
 
+class CalcForm(FlaskForm):
+    method = SelectField(label='Function!', choices=['n!', 'ncr', 'npr'])
+    n = IntegerField('Input n')
+    r = IntegerField('Input r')
+    submit = SubmitField('Calculator')
 
 db.create_all()
 
@@ -282,5 +287,24 @@ def home():
                                    form=form)
     return render_template('index2.html', form=form, img='https://i.giphy.com/media/UDU4oUJIHDJgQ/giphy.webp',
                            status='To Play this game guess a number between 1 and 10')
+  
+@app.route('/calculator', methods=['POST', 'GET'])
+def calc():
+    form = CalcForm()
+
+    if form.validate_on_submit():
+        m = form.method.data
+        n = form.n.data
+        r = form.r.data
+        if m == 'n!':
+            result = fact(n)
+            return render_template('cal.html', form=form, result=result, ans=True)
+        elif m == 'ncr':
+            result = ncr(n, r)
+            return render_template('cal.html', form=form, result=result, ans=True)
+        elif m == 'npr':
+            result = npr(n, r)
+            return render_template('cal.html', form=form, result=result, ans=True)
+    return render_template('cal.html', form= form, ans=False)  
 if __name__ == "__main__":
     app.run(debug=True)
