@@ -128,7 +128,19 @@ class CalcForm(FlaskForm):
     submit = SubmitField('Calculator')
 
 db.create_all()
+def fact(n):
+    result = 1
+    for a in range(1, n + 1):
+        result = result * a
+    return result
 
+
+def ncr(n, r):
+    return fact(n) / (fact(r) * fact(n - r))
+
+
+def npr(n, r):
+    return ncr(n, r) * fact(r)
 
 @app.route('/')
 def get_all_posts():
