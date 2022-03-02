@@ -1,0 +1,21 @@
+{% extends 'bootstrap/base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 mx-auto"/>
+            <h1>Calculator</h1>
+            {{ wtf.quick_form(form) }}
+            {% if ans == True %}
+            <h2>Result: {{result}}</h2>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
