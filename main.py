@@ -125,7 +125,7 @@ class CalcForm(FlaskForm):
     method = SelectField(label='Function!', choices=['n!', 'ncr', 'npr'])
     n = IntegerField('Input n')
     r = IntegerField('Input r')
-    submit = SubmitField('Calculator')
+    submit = SubmitField('Calculate')
 
 db.create_all()
 def fact(n):
