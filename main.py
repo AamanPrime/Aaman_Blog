@@ -489,5 +489,4 @@ def website():
             'vr.google.com', 'opinionator.blogs.nytimes.com', 'ericsson.com']
     web = random.choice(list)
     return render_template('web.html',weblink=web)  
-if __name__ == "__main__":
-    app.run(debug=True)
+
