@@ -16,7 +16,7 @@ import random
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = "sadasdadbjd"
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
@@ -319,4 +319,9 @@ def calc():
             return render_template('cal.html', form=form, result=result, ans=True)
     return render_template('cal.html', form= form, ans=False)  
 
+@app.route('/test')
+def test():
+    return  render_template("test.html")
 
+if __name__ == "__main__":
+    app.run(debug=True)
