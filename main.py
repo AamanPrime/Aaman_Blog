@@ -1,5 +1,7 @@
 import functools
-from flask import Flask, render_template, redirect, url_for, flash, abort
+import time
+
+from flask import Flask, render_template, redirect, url_for, flash, abort, request,send_file
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
@@ -13,7 +15,7 @@ from sqlalchemy.orm import relationship
 import os
 import flask_gravatar
 import random
-
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "sadasdadbjd"
@@ -121,13 +123,37 @@ class Comment(db.Model):
     comment_author = relationship("User", back_populates="comments")
     text = db.Column(db.Text, nullable=False)
 
+
 class CalcForm(FlaskForm):
     method = SelectField(label='Function!', choices=['n!', 'ncr', 'npr'])
     n = IntegerField('Input n')
     r = IntegerField('Input r')
     submit = SubmitField('Calculate')
 
+
+class InvoiceForm(FlaskForm):
+    item1 = StringField("Item Description", validators=[DataRequired()])
+    qty1 = StringField("Enter Quantity")
+    rate1 = StringField("Enter Rate")
+
+    item2 = StringField("Item Description", validators=[DataRequired()])
+    qty2 = StringField("Enter Quantity")
+    rate2 = StringField("Enter Rate")
+
+    item3 = StringField("Item Description", validators=[DataRequired()])
+    qty3 = StringField("Enter Quantity")
+    rate3 = StringField("Enter Rate")
+
+    submit = SubmitField("Submit")
+
+
+class InvoiceFormSubmit(FlaskForm):
+    submit = SubmitField("Submit")
+
+
 db.create_all()
+
+
 def fact(n):
     result = 1
     for a in range(1, n + 1):
@@ -142,11 +168,13 @@ def ncr(n, r):
 def npr(n, r):
     return ncr(n, r) * fact(r)
 
+
 @app.route('/')
 def get_all_posts():
     posts = db.session.query(BlogPost).all()
     posts.reverse()
-    return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated, current_user=current_user)
+    return render_template("index.html", all_posts=posts, logged_in=current_user.is_authenticated,
+                           current_user=current_user)
 
 
 @app.route("/post/<int:index>", methods=['POST', 'GET'])
@@ -273,10 +301,11 @@ def register():
         return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
     return render_template('register.html', form=form, logged_in=current_user.is_authenticated)
 
+
 class GuessForm(FlaskForm):
     guess = IntegerField("Guess Your Number")
     submit = SubmitField('Try Your Luck')
-  
+
 
 @app.route('/game', methods=['POST', 'GET'])
 def home():
@@ -299,7 +328,8 @@ def home():
                                    form=form)
     return render_template('index2.html', form=form, img='https://i.giphy.com/media/UDU4oUJIHDJgQ/giphy.webp',
                            status='To Play this game guess a number between 1 and 10')
-  
+
+
 @app.route('/calculator', methods=['POST', 'GET'])
 def calc():
     form = CalcForm()
@@ -317,11 +347,112 @@ def calc():
         elif m == 'npr':
             result = npr(n, r)
             return render_template('cal.html', form=form, result=result, ans=True)
-    return render_template('cal.html', form= form, ans=False)  
+    return render_template('cal.html', form=form, ans=False)
 
-@app.route('/test')
-def test():
-    return  render_template("test.html")
+
+@app.route('/invoice', methods=['GET', 'POST'])
+def bill():
+    width = 547
+    height = 794
+    if request.method == 'POST':
+        projectname = request.form.get('projectname')
+        projectaddress = request.form.get('projectaddress')
+        projectmanager = request.form.get('projectmanager')
+        date = request.form.get('date')
+        pdf = FPDF('P', 'pt', 'A4')
+        pdf.add_page()
+
+        # Header
+        pdf.rect(24, 24, width, height)
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('arial', 'B', 12)
+        pdf.cell(w=width * 0.49, h=10, txt='PAN NO. QZLPS5488G', align="L", ln=0)
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('arial', 'B', 12)
+        pdf.cell(w=width * 0.49, h=10, txt='Phone No. +91-9717317286', align="R", ln=1)
+
+        pdf.set_font('arial', 'B', 28)
+        pdf.set_text_color(0, 160, 56)
+
+        pdf.cell(w=width * 0.72, h=50, txt="AAMAN SHEIKH", border=0, align="R", ln=1)
+        pdf.set_font('arial', 'B', 15)
+        pdf.set_text_color(0, 0, 0)
+        pdf.cell(w=width, h=5, txt="DEVELOPER", border=0, align="C", ln=1)
+        pdf.cell(w=width, h=35, txt="412 STREET 7 B BLOCK ROSHAN NAGAR FARIDABAD", border=0, align='C', ln=1)
+        pdf.rect(50, 125, 497, 1, style="f")
+
+        # INFORMATION
+        pdf.set_font('arial', 'B', 11)
+        pdf.cell(w=100, h=40, txt=" ", border=0, align="c", ln=1)
+        pdf.cell(w=22, h=15, txt=" ", ln=0)
+        pdf.cell(w=100, h=25, txt="PROJECT NAME", border=1, align="C", ln=0)
+        pdf.cell(w=247, h=25, txt=projectname.upper(), border=1, align="C", ln=0)
+        pdf.cell(w=50, h=25, txt="DATE", border=1, align="C", ln=0)
+        pdf.cell(w=100, h=25, txt=date, border=1, align="C", ln=1)
+        pdf.cell(w=22, h=15, txt=" ", ln=0)
+        pdf.cell(w=125, h=25, txt="PROJECT ADDRESS", border=1, align="C", ln=0)
+        pdf.cell(w=372, h=25, txt=projectaddress.upper(), border=1, align="C", ln=1)
+        pdf.cell(w=22, h=15, txt=" ", ln=0)
+        pdf.cell(w=125, h=25, txt="PROJECT MANAGER", border=1, align="C", ln=0)
+        pdf.cell(w=372, h=25, txt=projectmanager.upper(), border=1, align="C", ln=1)
+
+        # ITEMS HEADING
+        pdf.cell(w=100, h=20, txt=" ", border=0, align="C", ln=1)
+        pdf.cell(w=22, h=15, txt=" ", ln=0)
+        pdf.cell(w=32, h=25, txt="S.NO", border=1, align="C", ln=0)
+        pdf.cell(w=250, h=25, txt="ITEM DESCRIPTION", border=1, align="C", ln=0)
+        pdf.cell(w=70, h=25, txt="QTY.(SQFT)", border=1, align="C", ln=0)
+        pdf.cell(w=50, h=25, txt="RATE", border=1, align="C", ln=0)
+        pdf.cell(w=95, h=25, txt="AMOUNT", border=1, align="C", ln=0)
+
+        items = [(request.form.get(f'item{i}'), request.form.get(f'qty{i}'), request.form.get(f'rate{i}')) for i in
+                 range(1, 9)]
+        # ITEMS
+        total = 0
+        for i in range(len(items)):
+            pdf.set_font('arial', 'B', 10)
+            amount = ''
+            if len(items[i][1].strip()) != 0 and len(items[i][1].strip()) != 0:
+                amount = float(float(items[i][1]) * float(items[i][2]))
+            pdf.cell(w=100, h=20, txt=" ", border=0, align="C", ln=1)
+            pdf.cell(w=22, h=15, txt=" ", ln=0)
+            if len(items[i][1].strip()) != 0 and len(items[i][1].strip()) != 0:
+                pdf.cell(w=32, h=25, txt=str(i + 1), border="LR", align="C", ln=0)
+            else:
+                pdf.cell(w=32, h=25, txt="", border="LR", align="C", ln=0)
+            pdf.cell(w=250, h=25, txt=items[i][0].upper(), border="LR", align="C", ln=0)
+            pdf.cell(w=70, h=25, txt=items[i][1], border="LR", align="C", ln=0)
+            pdf.cell(w=50, h=25, txt=items[i][2], border="LR", align="C", ln=0)
+            pdf.cell(w=95, h=25, txt=f"{amount}", border="LR", align="C", ln=0)
+            pdf.cell(w=100, h=20, txt=" ", border=0, align="C", ln=1)
+            pdf.cell(w=22, h=15, txt=" ", ln=0)
+            pdf.cell(w=32, h=20, txt="", border="LR", align="C", ln=0)
+            pdf.cell(w=250, h=20, txt="", border="LR", align="C", ln=0)
+            pdf.cell(w=70, h=20, txt="", border="LR", align="C", ln=0)
+            pdf.cell(w=50, h=20, txt="", border="LR", align="C", ln=0)
+            pdf.cell(w=95, h=20, txt="", border="LR", align="C", ln=0)
+            if (type(amount) == float):
+                total += amount
+
+        # TOTAL
+        print(total)
+        pdf.cell(w=100, h=20, txt=" ", border=0, align="C", ln=1)
+        pdf.cell(w=22, h=15, txt=" ", ln=0)
+        pdf.cell(w=282, h=50, txt="", border=1, ln=0)
+        pdf.cell(w=120, h=50, txt="TOTAL", border=1, ln=0, align="C")
+        pdf.cell(w=95, h=50, txt=f"{total}", border=1, ln=1, align="C")
+
+        # FOOTER
+        pdf.cell(w=100, h=130, txt=" ", border=0, align="C", ln=1)
+
+        pdf.cell(w=100, h=1, txt="E-mail:- aamanprime@gmail.com", border=0, align="c", ln=1)
+
+        pdf.output(f'templates/{projectname}.pdf')
+
+        return send_file(f"templates/{projectname}.pdf")
+
+    return render_template('bill.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
