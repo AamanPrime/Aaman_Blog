@@ -206,6 +206,10 @@ def show_post(index):
 def about():
     return render_template("about.html", logged_in=current_user.is_authenticated)
 
+@app.route("/aptitude")
+def aptitude():
+    return render_template("aptitude.html")
+
 
 @app.route("/contact")
 def contact():
